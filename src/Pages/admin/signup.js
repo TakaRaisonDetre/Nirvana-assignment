@@ -34,6 +34,11 @@ export default function Signup(){
     const handleSignup =event =>{
         event.preventDefault();
 
+        if(password !== confirmPassword) {
+            alert('password is not mached ');
+            return;
+            } 
+
         firebase
         .auth()
         .createUserWithEmailAndPassword(email, password)
@@ -73,7 +78,7 @@ export default function Signup(){
              
                      <Grid container>
                      <Grid item xs={12}>
-                         
+
                         <Controls.Input 
                         name="fullName"
                         label="管理者のお名前"

@@ -36,7 +36,7 @@ const Signin=()=> {
          .auth()
          .signInWithEmailAndPassword(email, password)
          .then(()=>{
-             history.pushState('/candidates');
+             history.push('/candidates');
          }).catch((error)=>{
              setEmail('');
              setPassword('');

@@ -1,7 +1,7 @@
 import Input from './Input'
 import RadioGroup from './RadioGroup'
 import Select from './Select'
-import checkBox from './checkBox'
+import CheckBox from './checkBox'
 import DatePicker from './DatePicker'
 import Button from './button'
 
@@ -9,7 +9,7 @@ import Button from './button'
     Input,
     RadioGroup,
     Select,
-    checkBox,
+    CheckBox,
     DatePicker,
     Button
 

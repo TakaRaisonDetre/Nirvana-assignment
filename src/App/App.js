@@ -55,8 +55,11 @@ function App() {
   const classes = useStyles();
   return (
   <ThemeProvider theme={theme}>
-      <SideMenu/> 
-      <div className={classes.appMain}>
+      {/* <SideMenu/>  */}
+      {/* <div className={classes.appMain}> */}
+
+     <div>
+
       <Header/>
      
      <Router>

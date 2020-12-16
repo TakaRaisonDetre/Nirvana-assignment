@@ -1,8 +1,10 @@
-import React from 'react'
+import React, {useState, useContext} from 'react'
 import {Grid} from '@material-ui/core'
 import Controls from '../../components/controls/controls'
 import {useForm, Form } from '../../components/useForm'
 import * as employeeService from '../../Service/employeeService'
+import {FirebaseContext} from '../../context/firebase'
+
 
 const genderItems = [
     {id: 'male', title: '男性'},
@@ -11,20 +13,24 @@ const genderItems = [
 ]
 
 const initialFvalue ={
-    id: 0,
+    id:0,
     fullName: '',
     email: '',
     age:'',
+    gender:'',
     reason:'',
-    mobile: '',
-    city: '',
-    gender: 'male',
     departmentId: '',
     hireDate: new Date(),
     isPermanent: false,
 }
 
 export default function EmployeeForm() {
+
+  // use context for firebase 
+  const {firebase} = useContext(FirebaseContext)  
+
+
+const [newEntry, setNewEntry] = useState(initialFvalue)
    
 const validate =(fieldValues = values)=>{
   let temp ={...errors}
@@ -48,22 +54,30 @@ const validate =(fieldValues = values)=>{
 // ステートとハンドルチェンジをUse Formに委譲　
  const {
     values, 
-  //  setValues, 
+    setValues, 
     errors,
     setErrors,
     handleInputChange,
     resetForm
 }= useForm(initialFvalue, true, validate)
 
-const handleSubmit =event=>{
-  event.preventDefault()
-  if(validate())
-    window.alert("testing...")
-  // Firebase action 
-
+const handleSubmit = e => {
+  e.preventDefault()
+  if (validate()) {
+      addOrEdit(values, resetForm);
+  }
 }
 
-
+const addOrEdit = (candidate, resetForm) => {
+  if (candidate.id == 0)
+      employeeService.insertEmployee(candidate)
+  else
+      employeeService.updateEmployee(candidate)
+  resetForm()
+  //setRecordForEdit(null)
+  //setOpenPopup(false)
+  //setRecords(employeeService.getAllEmployees())
+}  
 
     return (
       
@@ -80,7 +94,7 @@ const handleSubmit =event=>{
                         <Controls.Input 
                         variant="outlined"
                         label="メール"
-                       name="email"
+                        name="email"
                         value = {values.email}
                         onChange ={handleInputChange}
                         error={errors.email}
@@ -88,8 +102,8 @@ const handleSubmit =event=>{
 
                           <Controls.Input 
                         variant="outlined"
-                         label="ご年齢"
-                       name="age"
+                        label="ご年齢"
+                      　name="age"
                         value = {values.age}
                         onChange ={handleInputChange}
                         error={errors.age}
@@ -98,7 +112,7 @@ const handleSubmit =event=>{
                          <Controls.Input 
                         variant="outlined"
                         label="希望理由"
-                      name="reason"
+                        name="reason"
                         value = {values.reason}
                         multiline
                         onChange ={handleInputChange}

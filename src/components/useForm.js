@@ -14,7 +14,7 @@ const handleInputChange =(event)=>{
         [name]:value
     })
     if(validateOnChange)
-    validate({[name]:value})
+    validate({ [name]: value })
 }
 
 const resetForm =()=>{
