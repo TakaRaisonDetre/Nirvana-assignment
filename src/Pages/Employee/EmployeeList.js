@@ -8,7 +8,7 @@ import useTable from "../../components/useTable"
 import {firebase} from '../../Service/employeeService'
 
 import Controls from '../../components/controls/controls'
-import {Search} from '@material-ui/icons'
+import {BluetoothDisabledSharp, CloudDownload, Search} from '@material-ui/icons'
 
 const useStyles = makeStyles(theme=>({
    pageContent:{
@@ -44,8 +44,6 @@ const headCells =[
     {id: 'reason', label: '応募理由'},
 ]
 
-
-
  const {
      TblContainer,
      TblHead,
@@ -64,6 +62,76 @@ const handleSearch=(e)=>{
       }
   })
 }
+
+const download = (data)=>{
+  const blob=  new Blob([data], {type: 'text/csv'});
+  const url = window.URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.setAttribute('hidden', '');
+  a.setAttribute('href', url);
+  a.setAttribute('download', 'downlaod.csv');
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+}
+
+
+const objectToCsv =function (data){
+
+    const csvRows =[];
+
+  // get the header
+const headers = Object.keys(data[0]);
+// to make sure each are correctly comma separated !
+csvRows.push(headers.join(','));
+console.log(csvRows)
+  // loop over the rows
+for (const row of data) {
+   const values=  headers.map(header=>{
+
+    const val = row[header];
+       // replace multiple quote with backslash quote
+        const escaped = (''+row[header]).replace(/"/g, '\\"');
+        return `"${escaped}"`; 
+    });
+  
+    csvRows.push(values.join(','))
+}
+
+  console.log(csvRows)
+  return csvRows.join('\n');
+
+};
+
+
+// CSV (excel) Downlaod function
+const getCSVreport = async () =>{
+ // first get data of registration from firebase
+
+ const res =  await recordsAfterPagingAndSorting()
+  console.log(res);
+
+  // implicit retrun ... wrap with additional parantheses
+  // reformat json object to be consistent CSV field format
+  const data = res.map(row=> ({
+    fullName: row.fullName,
+    email: row.email,
+    reason:row.reason,
+    gender:row.gender,
+    departmentId : row.departmentId,
+    age:row.age,
+    isPermanent:row.isPermanent
+  }));
+
+  console.log(data)
+
+   const csvData = objectToCsv(data);
+   console.log(csvData);
+   download(csvData);
+
+}
+
 
 
 
@@ -91,6 +159,11 @@ const openInPopup = item => {
                }} 
                onChange={handleSearch}
             />
+                        <Controls.Button
+                            type="button"
+                            text="CSV　ダウンロード"
+                            onClick={getCSVreport}
+                            />
     　　</Toolbar>
 
 
