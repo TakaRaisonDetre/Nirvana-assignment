@@ -53,7 +53,7 @@ export default function useTable(registration, headCells, filterFn) {
                      <TableCell key={head.id}
                      sortDirection={orderBy===head.id?order:false}
                      >
-                     <TableSortLabel
+                     <TableSortLabel key={head.id}
                      active={orderBy===head.id}
                      direction={orderBy === head.id? order:'asc' }
                      onClick={()=>{handleSortRequest(head.id)}}>

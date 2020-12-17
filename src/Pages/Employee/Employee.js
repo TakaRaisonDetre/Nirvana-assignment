@@ -24,6 +24,7 @@ export default function Employees() {
         icon={<PeopleOutlineTwoToneIcon fontSize="large"/>}
         />
         <Paper className={classes.pageContent}>
+        
         <EmployeeForm /> 
      
        </Paper>

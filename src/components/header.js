@@ -1,13 +1,10 @@
 import React from 'react'
-import {AppBar, Toolbar, Grid, InputBase, IconButton, Badge, makeStyles} from '@material-ui/core'
-import NotificationsNoneIcon from '@material-ui/icons/NotificationsNone'
-import ChatBubbleOutlineIcon from '@material-ui/icons/ChatBubbleOutline'
+import {AppBar, Toolbar, Grid, InputBase,  makeStyles} from '@material-ui/core'
 import SearchIcon from '@material-ui/icons/Search';
 
 const useStyles = makeStyles(theme=>({
     root:{
         backgroundColor: '#fff',
-       
     },
     searchInput:{
         opacity:'0.6',
@@ -45,16 +42,7 @@ export default function Header() {
                 </Grid>
                 <Grid item sm></Grid>
                 <Grid item  >
-                    <IconButton >
-                       <Badge badgeContent ={4} color="secondary">
-                        <NotificationsNoneIcon fontSize="small"/>
-                        </Badge>  
-                       </IconButton>
-                       <IconButton> 
-                        <Badge badgeContent ={3} color="primary">
-                        <ChatBubbleOutlineIcon fontSize="small"/>
-                        </Badge>   
-                    </IconButton>
+                    
                 </Grid>
             </Grid>
 

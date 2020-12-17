@@ -1,9 +1,9 @@
-import React, {useState, useContext} from 'react'
+import React from 'react'
 import {Grid} from '@material-ui/core'
 import Controls from '../../components/controls/controls'
 import {useForm, Form } from '../../components/useForm'
 import * as employeeService from '../../Service/employeeService'
-import {FirebaseContext} from '../../context/firebase'
+
 
 
 const genderItems = [
@@ -13,7 +13,6 @@ const genderItems = [
 ]
 
 const initialFvalue ={
-    id:0,
     fullName: '',
     email: '',
     age:'',
@@ -24,22 +23,18 @@ const initialFvalue ={
     isPermanent: false,
 }
 
-export default function EmployeeForm() {
-
-  // use context for firebase 
-  const {firebase} = useContext(FirebaseContext)  
-
-
-const [newEntry, setNewEntry] = useState(initialFvalue)
-   
+export default function EmployeeForm(props) {
+    
 const validate =(fieldValues = values)=>{
   let temp ={...errors}
   if('fullName' in fieldValues)
   temp.fullName = fieldValues.fullName? "": "入力必須"
   if('email' in fieldValues)
+  temp.email = fieldValues.email?"":"入力必須"
   temp.email =  (/$^|.+@.+..+/).test(fieldValues.email) ? "" : "メールフォーマットが不明です."
   if('reason' in fieldValues)
   temp.reason = fieldValues.reason? "":  "入力必須"
+  if('age' in fieldValues)
   temp.age= fieldValues.age? "":  "入力必須"
   if('departmentId' in fieldValues)
   temp.departmentId = fieldValues.departmentId.length !== 0 ? "" : "入力必須"
@@ -51,10 +46,9 @@ const validate =(fieldValues = values)=>{
 }
 
 //　aggregate all form actions to useform component 
-// ステートとハンドルチェンジをUse Formに委譲　
+// ステートとハンドルチェンジをUseFormに委譲　
  const {
     values, 
-    setValues, 
     errors,
     setErrors,
     handleInputChange,
@@ -69,14 +63,8 @@ const handleSubmit = e => {
 }
 
 const addOrEdit = (candidate, resetForm) => {
-  if (candidate.id == 0)
-      employeeService.insertEmployee(candidate)
-  else
-      employeeService.updateEmployee(candidate)
+    employeeService.insertEmployee(candidate)
   resetForm()
-  //setRecordForEdit(null)
-  //setOpenPopup(false)
-  //setRecords(employeeService.getAllEmployees())
 }  
 
     return (
@@ -166,8 +154,5 @@ const addOrEdit = (candidate, resetForm) => {
                     </Grid>
                  </Grid>
             </Form>
-       
-
-       
     )
 }

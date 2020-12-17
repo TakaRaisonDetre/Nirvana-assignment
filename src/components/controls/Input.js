@@ -13,13 +13,14 @@ export default function Input(props) {
         },
     }))
 
-    const { name, label, value, onChange, error=null, multiline, ...other} = props
+    const { name, label, value, onChange, error=null, disabled, multiline, ...other} = props
     const classes=useStyles();
     return (
         <TextField
         variant="outlined"
         label={label}
         name={name}
+        disabled={disabled}
         value = {value}
         multiline = {multiline? multiline : null}
         onChange ={onChange}
