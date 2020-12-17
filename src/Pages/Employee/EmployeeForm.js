@@ -30,7 +30,6 @@ const validate =(fieldValues = values)=>{
   if('fullName' in fieldValues)
   temp.fullName = fieldValues.fullName? "": "入力必須"
   if('email' in fieldValues)
-  temp.email = fieldValues.email?"":"入力必須"
   temp.email =  (/$^|.+@.+..+/).test(fieldValues.email) ? "" : "メールフォーマットが不明です."
   if('reason' in fieldValues)
   temp.reason = fieldValues.reason? "":  "入力必須"

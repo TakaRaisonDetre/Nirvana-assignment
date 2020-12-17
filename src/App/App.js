@@ -12,6 +12,9 @@ import {CssBaseline, makeStyles, createMuiTheme, ThemeProvider} from '@material-
 
 // routing restriction 
 import {RedirectAfterSignin, ProtectedRoute } from '../Service/routeHelper'
+// Auth listener to identify current user 
+import  useAuthListener  from '../Service/use-auth-listener'
+
 
 // Customized Theme 
 const theme = createMuiTheme({
@@ -32,8 +35,8 @@ const theme = createMuiTheme({
 
 const useStyles = makeStyles ({
   appMain:{
-  　paddingLeft :'50px',
-　　  paddingRight :'50px',
+  　paddingLeft :'0px',
+　　  paddingRight :'0px',
      width:'100%'
   }
 })
@@ -42,14 +45,17 @@ function App() {
   
   const classes = useStyles();
  
-  const user = {};
+  const { user } = useAuthListener();
+
+   console.log(user)
 
   return (
   <ThemeProvider theme={theme}>
      <div　className={classes.appMain}>
-      <Header/>
+      <Header user={user}/>
 
      <Router>
+       
        <Switch>
        <RedirectAfterSignin user={user} loggedInPath="/candidates" path="/signin" exact >
        <Signin/>
@@ -64,7 +70,7 @@ function App() {
        </ProtectedRoute>   
 
        <Employees/>
-       </Switch>
+       </Switch> 
            
      </Router>
     
