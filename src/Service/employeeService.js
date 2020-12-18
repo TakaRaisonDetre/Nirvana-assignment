@@ -1,9 +1,10 @@
+
 import Firebase from 'firebase/app'
 import 'firebase/firestore';
 import 'firebase/auth';
 
 const config = {
-   
+    
   }
 
  const firebase= Firebase.initializeApp(config);
@@ -13,12 +14,12 @@ const config = {
 
 export const getPreferredDeptCollection = ()=>(
  [  
-   {id:'1312', title: '総務'},
-   {id:'3454', title: '人事部'}, 
-   {id:'4645', title: '経営管理部'}, 
-   {id:'4665', title: '経理部'}, 
-   {id:'4675', title: '営業部'}, 
-   {id:'4653', title: 'マーケティング部'},
+   {id:'1', title: '総務'},
+   {id:'2', title: '人事部'}, 
+   {id:'3', title: '経営管理部'}, 
+   {id:'4', title: '経理部'}, 
+   {id:'5', title: '営業部'}, 
+   {id:'6', title: 'マーケティング部'},
 ]
 )
 
@@ -46,20 +47,15 @@ export const updateEmployee=async(candidate) =>{
    reason:candidate.reason,
    departmentId:candidate.departmentId,
  })
- .then(()=>{
- getall()
- })
  
 }
 
 export const deleteEmployee=async(candidate)=>{
   const db= firebase.firestore()
-await  db.collection('registration').doc(candidate.id).delete()
-  .then(()=>{
-     getall();
-   
-  })
+  await  db.collection('registration').doc(candidate.id).delete()
+ 
 }
+
 
 export const getall=async()=>{
   const db = firebase.firestore()
@@ -67,4 +63,3 @@ export const getall=async()=>{
  
  
 }
-

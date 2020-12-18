@@ -6,6 +6,7 @@ import DatePicker from './DatePicker'
 import Button from './button'
 import ActionButton from './ActionButton'
 import Notification from './Notification'
+import ConfirmDialog from './ConfirmDialog'
 
  const Controls = {
     Input,
@@ -15,7 +16,8 @@ import Notification from './Notification'
     DatePicker,
     Button,
     ActionButton,
-    Notification
+    Notification,
+    ConfirmDialog,
 
 
 }

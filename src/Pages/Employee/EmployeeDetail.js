@@ -1,4 +1,4 @@
-import React , {useEffect} from 'react'
+import React , {useEffect, useState} from 'react'
 import {Grid} from '@material-ui/core'
 import Controls from '../../components/controls/controls'
 import {useForm, Form } from '../../components/useForm'
@@ -26,8 +26,8 @@ const initialFvalue ={
 
 export default function EmployeeDetail(props) {
     
-  const {recordForEdit, EditRecords ,}=props
-  
+  const {recordForEdit, EditRecords, DeleteRecords }=props
+ 
 
 const validate =(fieldValues = values)=>{
   let temp ={...errors}
@@ -59,13 +59,17 @@ const validate =(fieldValues = values)=>{
     resetForm
 }= useForm(initialFvalue, true, validate)
 
-const handleSubmit = e => {
+const EditRecord = e => {
   e.preventDefault()
   if (validate()) {
     EditRecords(values, resetForm);
   }
   console.log(values)
  
+}
+const DeleteRecord = e =>{
+  e.preventDefault()
+  DeleteRecords(values, resetForm);
 }
 
 useEffect(()=>{
@@ -76,10 +80,9 @@ useEffect(()=>{
 },[recordForEdit]) 
   
 
-
     return (
       
-            <Form onSubmit={handleSubmit}>
+            <Form>
                 <Grid container>
                     <Grid item xs={6}>
                        <Controls.Input 
@@ -149,10 +152,15 @@ useEffect(()=>{
 
                         <div>
                             <Controls.Button
-                            type="submit"
+                            type="submit"s
                             text="訂正する"
+                            onClick={EditRecord}
                             />
-                            
+                            <Controls.Button
+                            type="submit"
+                            text="削除する"
+                            onClick={DeleteRecord}
+                            />
                              
                         </div>
 

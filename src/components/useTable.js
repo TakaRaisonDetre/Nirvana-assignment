@@ -20,7 +20,7 @@ const useStyles=makeStyles(theme=>({
    }
 }))
 
-export default function useTable(registration, headCells, filterFn) {
+export default function useTable(records, headCells, filterFn) {
     
    const classes = useStyles()
 
@@ -80,7 +80,7 @@ export default function useTable(registration, headCells, filterFn) {
         page={page}
         rowsPerPageOptions = {pages}
         rowsPerPage ={rowsPerPage}
-        count={registration.length}
+        count={records.length}
         onChangePage ={handleChangePage}
         onChangeRowsPerPage={handleChangeRowsPerPage}
         />)
@@ -110,7 +110,7 @@ export default function useTable(registration, headCells, filterFn) {
     }
 
     const recordsAfterPagingAndSorting = () => {
-        return stableSort(filterFn.fn(registration), getComparator(order, orderBy))
+        return stableSort(filterFn.fn(records), getComparator(order, orderBy))
             .slice(page * rowsPerPage, (page + 1) * rowsPerPage)
     }
 

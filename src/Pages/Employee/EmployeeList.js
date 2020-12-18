@@ -13,6 +13,7 @@ import GetApp from '@material-ui/icons/GetApp'
 import EmployeeDetail from '../../Pages/Employee/EmployeeDetail'
 import * as employeeService from '../../Service/employeeService'
 import Notification from '../../components/controls/Notification'
+import ConfirmDialog from '../../components/controls/ConfirmDialog'
 
 
 const useStyles = makeStyles(theme=>({
@@ -21,29 +22,6 @@ const useStyles = makeStyles(theme=>({
    newButton:{position:'absolute',right:'10px'} 
 }))
 
-export default function Employees() {
- 
-const classes = useStyles()
- 
-const [recordForEdit, setRecordForEdit] = useState(null) 
-const [registration, setRegistration ] = useState([employeeService.getall()])
-
-const [filterFn, setFilterFn] = useState({fn:items=>{return items;}})
-const [openPopup, setOpenPopup] =useState(false)
-const [notify, setNotify] = useState({isOpen:false, message:'', type:''});
-
-const [records, setRecords] = useState([employeeService.getall()])
-
-
-
-useEffect(()=>{
-    const fetchData = async()=>{
-        const db= firebase.firestore()
-        const data = await db.collection("registration").get()
-        setRegistration(data.docs.map(doc=>({...doc.data(), id: doc.id})))       
-       }
-   fetchData()
-},[setRecords, recordForEdit])
 
 const headCells =[
     {id: 'fullName', label: '求職者氏名'},
@@ -53,21 +31,47 @@ const headCells =[
     {id: 'reason', label: '応募理由'},
     {id: 'action', label: '詳細'}
 ]
+
+export default function Employees() {
+ 
+const classes = useStyles()
+
+const [records, setRecords] = useState([employeeService.getall()])
+const [recordForEdit, setRecordForEdit] = useState(null) 
+const [filterFn, setFilterFn] = useState({fn:items=>{return items;}})
+const [openPopup, setOpenPopup] =useState(false)
+const [notify, setNotify] = useState({isOpen:false, message:'', type:''});
+const [confirmDialog, setConfirmDialog] = useState({isOpen:false, title:'', subTitle:'' })
+
+
+ useEffect(()=>{
+     const fetchData = async()=>{
+        const db= firebase.firestore()
+        const data = await db.collection("registration").get()
+         setRecords(data.docs.map(doc=>({...doc.data(), id: doc.id})))       
+        }
+    fetchData()
+    console.log('Use effecrt fire!')
+ },[recordForEdit])
+
+
  const {
      TblContainer,
      TblHead,
      TblPagination,
      recordsAfterPagingAndSorting
-    } = useTable(registration, headCells, filterFn)
+    } = useTable(records, headCells, filterFn)
 
 const handleSearch=(e)=>{
  let target = e.target;
+
   setFilterFn({
       fn:items=>{
           if(target.value==="")
           return items;
           else 
-          return items.filter(x => x.fullName.toLowerCase().includes(target.value))
+         return items.filter(x => x.fullName.toLowerCase().includes(target.value))
+        
       }
   })
 }
@@ -134,6 +138,7 @@ const getCSVreport = async () =>{
 
 }
 
+
 // Single data for editing and checking
 const openInPopup = item => {
    　　setRecordForEdit(item)
@@ -145,8 +150,9 @@ const EditRecords = (employee, resetForm) => {
     employeeService.updateEmployee(employee)
     resetForm()
     setRecordForEdit(null)
+    setFilterFn({fn:items=>{return items;}})
     setOpenPopup(false)
-    setRecords(employeeService.getall())
+    setRecords([employeeService.getall()])
     setNotify({
        isOpen:true,
        message: "情報が更新されました",
@@ -155,14 +161,24 @@ const EditRecords = (employee, resetForm) => {
 }
 
 // deleting data 
-const onDelete = (item) =>{
+const DeleteRecords = (item) =>{
     const id = item.id
+   setConfirmDialog({
+       ...confirmDialog,
+       isOpen:false
+   })
     employeeService.deleteEmployee(item)
-    console.log(item)
+    setOpenPopup(false)
+    setFilterFn({fn:items=>{return items;}})
+    setNotify({
+        isOpen:true,
+        message: "情報が削除されました",
+        type:"error"
+    })
     setRecordForEdit(null)
-    setRecords(employeeService.getall())
-   
+   setRecords([employeeService.getall()])
 }
+
 
     return (
         <> 
@@ -210,15 +226,12 @@ const onDelete = (item) =>{
                           <TableCell >
                              
                               <Controls.ActionButton 
+                            
                               color="primary"
                               onClick={() => { openInPopup(item) }}>
                                   <EditOutlinedIcon fontSize = "small"/>
                               </Controls.ActionButton>
-                              <Controls.ActionButton 
-                              onClick={()=>onDelete(item)}
-                              color="primary">
-                                  <CloseIcon fontSize = "small"/>
-                              </Controls.ActionButton>
+
                           </TableCell>
                       </TableRow>
                   ))
@@ -237,12 +250,17 @@ const onDelete = (item) =>{
         <EmployeeDetail 
         recordForEdit={recordForEdit}
         EditRecords={EditRecords}
+        DeleteRecords={DeleteRecords}
         />
        </Popup>
        <Notification 
        notify={notify}
        setNotify={setNotify}/>
 
+      <ConfirmDialog 
+      confirmDialog={confirmDialog}
+      setConfirmDialog={setConfirmDialog}
+     />
        </>
        
     )
