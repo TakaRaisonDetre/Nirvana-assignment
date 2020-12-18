@@ -1,53 +1,49 @@
 import React,{useEffect, useState}  from 'react'
-
 import PageHeader from '../../components/PageHeader'
 import Popup from '../../components/Popup'
 import PeopleOutlineTwoToneIcon from '@material-ui/icons/PeopleOutlineTwoTone'
 import {Paper, makeStyles, Toolbar, TableBody,TableRow,TableCell, InputAdornment} from '@material-ui/core'
-
 import useTable from "../../components/useTable"
 import {firebase} from '../../Service/employeeService'
-
 import Controls from '../../components/controls/controls'
 import { Search} from '@material-ui/icons'
-
+import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
+import CloseIcon from '@material-ui/icons/Close';
 import GetApp from '@material-ui/icons/GetApp'
-
-import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
 import EmployeeDetail from '../../Pages/Employee/EmployeeDetail'
+import * as employeeService from '../../Service/employeeService'
+import Notification from '../../components/controls/Notification'
+
 
 const useStyles = makeStyles(theme=>({
-   pageContent:{
-       margin: theme.spacing(5),
-       padding: theme.spacing(3)
-   },
-   searchInput:{
-      width:'55%' 
-   },
-   newButton:{
-       position:'absolute',
-       right:'10px'
-   } 
+   pageContent:{margin: theme.spacing(5),padding: theme.spacing(3)},
+   searchInput:{width:'55%' },
+   newButton:{position:'absolute',right:'10px'} 
 }))
 
 export default function Employees() {
  
- const classes = useStyles()
+const classes = useStyles()
  
 const [recordForEdit, setRecordForEdit] = useState(null) 
-const [registration, setRegistration ] = useState([])
+const [registration, setRegistration ] = useState([employeeService.getall()])
+
 const [filterFn, setFilterFn] = useState({fn:items=>{return items;}})
 const [openPopup, setOpenPopup] =useState(false)
+const [notify, setNotify] = useState({isOpen:false, message:'', type:''});
+
+const [records, setRecords] = useState([employeeService.getall()])
+
+
 
 useEffect(()=>{
     const fetchData = async()=>{
-     const db= firebase.firestore()
-     const data = await db.collection("registration").get()
-     setRegistration(data.docs.map(doc=>doc.data()))
-    }
-    fetchData()
-   
-},[])
+        const db= firebase.firestore()
+        const data = await db.collection("registration").get()
+        setRegistration(data.docs.map(doc=>({...doc.data(), id: doc.id})))       
+       }
+   fetchData()
+},[setRecords, recordForEdit])
 
 const headCells =[
     {id: 'fullName', label: '求職者氏名'},
@@ -56,9 +52,7 @@ const headCells =[
     {id: 'gender', label: '性別'},
     {id: 'reason', label: '応募理由'},
     {id: 'action', label: '詳細'}
-
 ]
-
  const {
      TblContainer,
      TblHead,
@@ -91,11 +85,8 @@ const download = (data)=>{
 
 }
 
-
 const objectToCsv =function (data){
-
     const csvRows =[];
-
   // get the header
 const headers = Object.keys(data[0]);
 // to make sure each are correctly comma separated !
@@ -104,8 +95,6 @@ console.log(csvRows)
   // loop over the rows
 for (const row of data) {
    const values=  headers.map(header=>{
-
-
        // replace multiple quote with backslash quote
         const escaped = (''+row[header]).replace(/"/g, '\\"');
         return `"${escaped}"`; 
@@ -113,10 +102,8 @@ for (const row of data) {
   
     csvRows.push(values.join(','))
 }
-
   console.log(csvRows)
   return csvRows.join('\n');
-
 };
 
 
@@ -149,9 +136,32 @@ const getCSVreport = async () =>{
 
 // Single data for editing and checking
 const openInPopup = item => {
- // 将来的にEditが必要な場合
-　　setRecordForEdit(item)
-   setOpenPopup(true)
+   　　setRecordForEdit(item)
+      setOpenPopup(true)
+   }
+   
+// New - Editting data
+const EditRecords = (employee, resetForm) => {
+    employeeService.updateEmployee(employee)
+    resetForm()
+    setRecordForEdit(null)
+    setOpenPopup(false)
+    setRecords(employeeService.getall())
+    setNotify({
+       isOpen:true,
+       message: "情報が更新されました",
+       type:"success"
+   })
+}
+
+// deleting data 
+const onDelete = (item) =>{
+    const id = item.id
+    employeeService.deleteEmployee(item)
+    console.log(item)
+    setRecordForEdit(null)
+    setRecords(employeeService.getall())
+   
 }
 
     return (
@@ -191,17 +201,23 @@ const openInPopup = item => {
             {
                   recordsAfterPagingAndSorting().map(item=> (
                       <TableRow key={item.id}>
-                          <TableCell key={item.id}>{item.fullName}</TableCell>
-                          <TableCell key={item.id}>{item.email}</TableCell>
-                          <TableCell key={item.id}>{item.age}</TableCell>
-                          <TableCell key={item.id}>{item.gender}</TableCell>
-                          <TableCell key={item.id}>{item.reason}</TableCell>
-                          <TableCell key={item.id}>
-                              <Controls.ActionButton
+                         
+                          <TableCell >{item.fullName}</TableCell>
+                          <TableCell >{item.email}</TableCell>
+                          <TableCell >{item.age}</TableCell>
+                          <TableCell >{item.gender}</TableCell>
+                          <TableCell >{item.reason}</TableCell>
+                          <TableCell >
+                             
+                              <Controls.ActionButton 
                               color="primary"
-                              onClick={()=>{openInPopup(item)}}
-                              >
-                              <AssignmentIndIcon fontSize="small"/>
+                              onClick={() => { openInPopup(item) }}>
+                                  <EditOutlinedIcon fontSize = "small"/>
+                              </Controls.ActionButton>
+                              <Controls.ActionButton 
+                              onClick={()=>onDelete(item)}
+                              color="primary">
+                                  <CloseIcon fontSize = "small"/>
                               </Controls.ActionButton>
                           </TableCell>
                       </TableRow>
@@ -218,9 +234,14 @@ const openInPopup = item => {
        openPopup = {openPopup}
        setOpenPopup = {setOpenPopup}
        >
-        <EmployeeDetail recordForEdit={recordForEdit}/>
- 
+        <EmployeeDetail 
+        recordForEdit={recordForEdit}
+        EditRecords={EditRecords}
+        />
        </Popup>
+       <Notification 
+       notify={notify}
+       setNotify={setNotify}/>
 
        </>
        

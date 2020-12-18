@@ -34,7 +34,37 @@ export function insertEmployee(candidate) {
 }
 
 
-export function updateEmployee(candidate, id) {
+export const updateEmployee=async(candidate) =>{
+ 
  const db = firebase.firestore()
- db.collection('registration').doc('id').set(candidate)
+ await db.collection('registration').doc(candidate.id).update({
+   fullName:candidate.fullName,
+   email:candidate.email,
+   age:candidate.age,
+   gender:candidate.gender,
+   isPermanent:candidate.isPermanent,
+   reason:candidate.reason,
+   departmentId:candidate.departmentId,
+ })
+ .then(()=>{
+ getall()
+ })
+ 
 }
+
+export const deleteEmployee=async(candidate)=>{
+  const db= firebase.firestore()
+await  db.collection('registration').doc(candidate.id).delete()
+  .then(()=>{
+     getall();
+   
+  })
+}
+
+export const getall=async()=>{
+  const db = firebase.firestore()
+ await db.collection('registration').get()
+ 
+ 
+}
+

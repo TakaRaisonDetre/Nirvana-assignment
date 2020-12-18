@@ -13,6 +13,7 @@ const genderItems = [
 ]
 
 const initialFvalue ={
+    id:'',
     fullName: '',
     email: '',
     age:'',
@@ -25,6 +26,8 @@ const initialFvalue ={
 
 export default function EmployeeForm(props) {
     
+
+
 const validate =(fieldValues = values)=>{
   let temp ={...errors}
   if('fullName' in fieldValues)
@@ -57,11 +60,11 @@ const validate =(fieldValues = values)=>{
 const handleSubmit = e => {
   e.preventDefault()
   if (validate()) {
-      addOrEdit(values, resetForm);
+      add(values, resetForm);
   }
 }
 
-const addOrEdit = (candidate, resetForm) => {
+const add = (candidate, resetForm) => {
     employeeService.insertEmployee(candidate)
   resetForm()
 }  
